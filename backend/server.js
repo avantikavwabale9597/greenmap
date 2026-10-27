@@ -17,14 +17,28 @@ mongoose
   .catch((err) => console.log("MongoDB connection error: ", err));
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true, // true for port 465
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    pass: process.env.EMAIL_PASS, // This MUST be your 16-letter Google App Password
+  },
+  // THE MAGIC FIX FOR RENDER TIMEOUTS:
+  // This prevents strict cloud SSL rules from dropping the connection
+  tls: {
+    rejectUnauthorized: false,
   },
 });
-app.get("/", (req, res) => {
-  res.send("GreenMap API is running...");
+
+// Optional but highly recommended: Add this right below it to verify the connection
+// when your server starts up!
+transporter.verify((error, success) => {
+  if (error) {
+    console.log("Transporter Error:", error);
+  } else {
+    console.log("Server is ready to take our messages");
+  }
 });
 
 // ADD THIS ROUTE TO FETCH ALL ISSUES
