@@ -80,7 +80,7 @@ export default function ReportIssue() {
 
     try {
       const response = await fetch(
-        "https://greenmap-backend-jwnf.onrender.com",
+        "https://greenmap-backend-jwnf.onrender.com/api/issues",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
