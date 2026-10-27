@@ -29,9 +29,19 @@ app.get("/", (req, res) => {
   res.send("GreenMap API is running...");
 });
 
+// ADD THIS ROUTE TO FETCH ALL ISSUES
+app.get("/api/issues", async (req, res) => {
+  try {
+    const issues = await Issue.find().sort({ createdAt: -1 });
+    res.json(issues);
+  } catch (err) {
+    console.error("Error fetching all issues:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.get("/api/issues/:id", async (req, res) => {
   try {
-    // Validate if the ID is a valid MongoDB ObjectId format first
     if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
       return res.status(400).json({ error: "Invalid issue ID format" });
     }
