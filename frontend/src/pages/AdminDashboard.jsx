@@ -58,7 +58,7 @@ export default function AdminDashboard() {
   const handleUpdateIssue = async (e) => {
     e.preventDefault();
     try {
-      await fetch(`http://localhost:5000/api/issues/${managingIssue._id}`, {
+      await fetch(`https://greenmap-backend-jwnf.onrender.com`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(managingIssue),
