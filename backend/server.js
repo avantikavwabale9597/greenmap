@@ -91,10 +91,7 @@ app.put("/api/issues/:id", async (req, res) => {
       return res.status(404).json({ error: "Issue not found" });
     }
 
-    // 1. Send the response back to the frontend IMMEDIATELY so it feels instant
-    res.json(updatedIssue);
-
-    // 2. Handle email sending in the background asynchronously (non-blocking)
+    // Check if we should send an email notification
     if (updatedIssue.userEmail && process.env.EMAIL_USER) {
       const frontendLink = `https://greenmappune.netlify.app/#/status/${updatedIssue._id}`;
 
@@ -120,14 +117,15 @@ app.put("/api/issues/:id", async (req, res) => {
         html: htmlBody,
       };
 
-      // Fire and forget (or catch errors quietly in the background)
-      transporter
-        .sendMail(mailOptions)
-        .then(() => console.log("Background email sent successfully!"))
-        .catch((emailError) =>
-          console.error("Nodemailer Background Error:", emailError.message),
-        );
+      try {
+        await transporter.sendMail(mailOptions);
+        console.log("Email successfully sent to:", updatedIssue.userEmail);
+      } catch (emailErr) {
+        console.error("CRITICAL Nodemailer Error:", emailErr.message);
+      }
     }
+
+    res.json(updatedIssue);
   } catch (err) {
     console.error("Error updating issue:", err.message);
     res.status(400).json({ error: err.message });
