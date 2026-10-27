@@ -56,7 +56,7 @@ export default function LandingPage() {
         fontFamily: "'Poppins', sans-serif",
       }}
     >
-      {/* HERO SECTION: Strict 50/50 Split with Exact Padding */}
+      {/* HERO SECTION: Now fully responsive for Mobile and Desktop! */}
       <section
         style={{
           width: "100%",
@@ -73,18 +73,20 @@ export default function LandingPage() {
             maxWidth: "1600px",
             display: "flex",
             flexDirection: "row",
+            flexWrap: "wrap", // <-- Safely wraps on phones, stays side-by-side on laptops
             alignItems: "center",
             justifyContent: "space-between",
             gap: "4rem",
           }}
         >
-          {/* LEFT COLUMN: Exactly 50% Width */}
+          {/* LEFT COLUMN: Text Section */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             style={{
-              width: "50%",
+              flex: "1 1 400px", // <-- Adapts to screen size perfectly
+              minWidth: "300px",
               display: "flex",
               flexDirection: "column",
               alignItems: "flex-start",
@@ -185,14 +187,15 @@ export default function LandingPage() {
             </div>
           </motion.div>
 
-          {/* RIGHT COLUMN: Exactly 50% Width with 3D Globe */}
+          {/* RIGHT COLUMN: 3D Globe Section */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 0.2 }}
             style={{
-              width: "50%",
-              height: "600px",
+              flex: "1 1 400px", // <-- Adapts to screen size perfectly
+              minWidth: "300px",
+              height: "min(600px, 60vh)", // <-- Keeps it looking great on small phones
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
