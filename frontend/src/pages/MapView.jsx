@@ -25,7 +25,7 @@ export default function MapView() {
   const fetchIssues = async () => {
     try {
       const response = await fetch(
-        "https://greenmap-backend-jwnf.onrender.com",
+        "https://greenmap-backend-jwnf.onrender.com/api/issues",
       );
       const data = await response.json();
       setIssues(data);
