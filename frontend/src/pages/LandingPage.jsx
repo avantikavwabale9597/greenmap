@@ -3,6 +3,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Sphere } from "@react-three/drei";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { Sphere, useTexture } from "@react-three/drei";
 import {
   MapPin,
   Megaphone,
