@@ -93,9 +93,6 @@ app.post("/api/issues", async (req, res) => {
     // This tells the frontend "Success!" right away so it doesn't time out
     res.status(201).json(savedIssue);
 
-    // 3. SEND EMAIL IN THE BACKGROUND
-    // Notice there is NO "await" here. The server handles this quietly after replying.
-    // (Ensure your 'transporter' variable is configured properly above this route)
     if (transporter) {
       transporter
         .sendMail({
@@ -122,6 +119,11 @@ app.put("/api/issues/:id", async (req, res) => {
       { returnDocument: "after" },
     );
 
+    // 1. SEND RESPONSE IMMEDIATELY
+    // The Admin dashboard updates instantly, no timeout!
+    res.json(updatedIssue);
+
+    // 2. SEND EMAIL IN THE BACKGROUND
     if (updatedIssue.userEmail && process.env.EMAIL_USER) {
       const frontendLink = `https://greenmappune.netlify.app/#/status/${updatedIssue._id}`;
 
@@ -154,18 +156,21 @@ app.put("/api/issues/:id", async (req, res) => {
         html: htmlBody,
       };
 
-      try {
-        await transporter.sendMail(mailOptions);
-        console.log("Email successfully sent with link!");
-      } catch (emailError) {
-        console.error("Nodemailer Error:", emailError.message);
-      }
+      // Notice there is NO "await" or "try/catch" blocking the code here.
+      // It handles the email silently using .then() and .catch()
+      transporter
+        .sendMail(mailOptions)
+        .then(() => console.log("Email successfully sent with link!"))
+        .catch((emailError) =>
+          console.error("Nodemailer Error:", emailError.message),
+        );
     }
-
-    res.json(updatedIssue);
   } catch (err) {
     console.error("Error updating issue:", err.message);
-    res.status(400).json({ error: err.message });
+    // Only send the error response if we haven't already replied to the frontend
+    if (!res.headersSent) {
+      res.status(400).json({ error: err.message });
+    }
   }
 });
 
