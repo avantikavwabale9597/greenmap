@@ -30,7 +30,7 @@ export default function MapView() {
       const data = await response.json();
       setIssues(data);
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching issues:", error);
     }
   };
 
@@ -63,7 +63,7 @@ export default function MapView() {
       setEditingIssue(null);
       fetchIssues();
     } catch (error) {
-      console.error(error);
+      console.error("Error updating issue:", error);
     }
   };
 
