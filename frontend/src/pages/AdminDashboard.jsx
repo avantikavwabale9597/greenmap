@@ -76,17 +76,22 @@ export default function AdminDashboard() {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to update issue");
+        throw new Error(`Server returned status ${response.status}`);
       }
+
+      const updated = await response.json();
+      console.log("Successfully updated:", updated);
 
       setManagingIssue(null);
       fetchIssues();
       alert("Status updated successfully! Email notification dispatched.");
     } catch (error) {
-      console.error("Error updating issue:", error);
+      console.error("Network or fetch error:", error);
+      alert(
+        "Failed to connect to the server. Please check your connection or try again.",
+      );
     }
   };
-
   const pendingCount = issues.filter(
     (i) => (i.status || "Pending") === "Pending",
   ).length;
