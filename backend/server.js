@@ -18,19 +18,17 @@ mongoose
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
+  port: 587,
+  secure: false, // Must be false for port 587 (uses STARTTLS)
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
-  pool: true,
-  maxConnections: 1,
-  rateDelta: 20000,
-  rateLimit: 5,
-  connectionTimeout: 15000,
-  greetingTimeout: 10000,
-  socketTimeout: 15000,
+  tls: {
+    rejectUnauthorized: false,
+  },
+  connectionTimeout: 20000, // 20 seconds
+  socketTimeout: 20000,
 });
 
 app.get("/", (req, res) => {
