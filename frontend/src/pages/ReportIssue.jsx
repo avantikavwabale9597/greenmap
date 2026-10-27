@@ -58,13 +58,34 @@ export default function ReportIssue() {
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData({ ...formData, image: reader.result });
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const MAX_WIDTH = 800; // Resize to a sensible width
+
+        // Calculate new dimensions while keeping aspect ratio
+        const scaleSize = MAX_WIDTH / img.width;
+        canvas.width = MAX_WIDTH;
+        canvas.height = img.height * scaleSize;
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        // Compress to JPEG at 70% quality (drastically reduces file size)
+        const compressedBase64 = canvas.toDataURL("image/jpeg", 0.7);
+
+        // Save the compressed image to your state!
+        setFormData({ ...formData, image: compressedBase64 });
       };
-      reader.readAsDataURL(file);
-    }
+    };
   };
 
   const handleSubmit = async (e) => {
@@ -391,11 +412,12 @@ export default function ReportIssue() {
                   marginBottom: "0.75rem",
                 }}
               >
-                Upload Image / Evidence
+                Upload Image / Evidence (Take a Photo or Choose)
               </label>
               <input
                 type="file"
-                accept=".png, .jpg, .jpeg, .svg"
+                accept="image/*"
+                capture="environment"
                 onChange={handleImageUpload}
                 style={{
                   width: "100%",

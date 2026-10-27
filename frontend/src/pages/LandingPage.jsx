@@ -15,6 +15,11 @@ import {
 const SplitEarth = () => {
   const groupRef = useRef();
 
+  // Load a high-quality realistic Earth texture
+  const earthTexture = useTexture(
+    "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
+  );
+
   useFrame(({ clock }) => {
     if (groupRef.current) {
       groupRef.current.rotation.y = clock.getElapsedTime() * 0.3;
@@ -23,17 +28,27 @@ const SplitEarth = () => {
 
   return (
     <group ref={groupRef}>
-      {/* Left Half: Clean & Lush Green/Blue Earth */}
+      {/* Left Half: Clean Realistic Earth */}
       <Sphere args={[1.75, 64, 64, 0, Math.PI]}>
-        <meshStandardMaterial color="#2d6a4f" roughness={0.4} metalness={0.1} />
+        <meshStandardMaterial
+          map={earthTexture}
+          color="#ffffff" // White keeps the natural Earth colors intact
+          roughness={0.4}
+          metalness={0.1}
+        />
       </Sphere>
 
-      {/* Right Half: Polluted & Smokey Brown Earth */}
+      {/* Right Half: Polluted, Muddy Earth */}
       <Sphere args={[1.75, 64, 64, Math.PI, Math.PI]}>
-        <meshStandardMaterial color="#4a3f35" roughness={0.9} metalness={0.0} />
+        <meshStandardMaterial
+          map={earthTexture}
+          color="#8b7355" // Tints the Earth texture with a dirty smog color
+          roughness={0.9}
+          metalness={0.0}
+        />
       </Sphere>
 
-      {/* Tech Wireframe Atmosphere */}
+      {/* Tech Wireframe Atmosphere (Kept exactly as you had it!) */}
       <Sphere args={[1.95, 32, 32]}>
         <meshBasicMaterial
           color="#ECF39E"
@@ -45,7 +60,6 @@ const SplitEarth = () => {
     </group>
   );
 };
-
 export default function LandingPage() {
   return (
     <div
