@@ -1,20 +1,30 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { CheckCircle2, AlertCircle, ArrowLeft } from "lucide-react";
 
 export default function Status() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [issue, setIssue] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const fallbackImage =
+    "https://placehold.co/600x400/e2e8f0/31572C?text=No+Image+Provided";
 
   useEffect(() => {
     fetch(`https://greenmap-backend-jwnf.onrender.com/api/issues/${id}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Issue not found");
+        return res.json();
+      })
       .then((data) => {
         setIssue(data);
         setLoading(false);
       })
       .catch((err) => {
         console.error("Error fetching issue:", err);
+        setError("Could not load issue details.");
         setLoading(false);
       });
   }, [id]);
