@@ -79,7 +79,7 @@ app.put("/api/issues/:id", async (req, res) => {
 
     if (updatedIssue.userEmail && process.env.EMAIL_USER) {
       // Create a link to your React frontend (Assuming Vite runs on port 5173)
-      const frontendLink = `http://localhost:5173/status/${updatedIssue._id}`;
+      const frontendLink = `https://greenmappune.netlify.app/status/${updatedIssue._id}`;
 
       // Build a beautiful HTML email body
       const htmlBody = `

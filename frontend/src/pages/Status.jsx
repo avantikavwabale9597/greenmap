@@ -7,7 +7,7 @@ export default function Status() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`https://greenmap-backend-jwnf.onrender.com`)
+    fetch(`https://greenmap-backend-jwnf.onrender.com/api/issues/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setIssue(data);

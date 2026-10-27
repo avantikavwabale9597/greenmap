@@ -52,11 +52,14 @@ export default function MapView() {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      await fetch(`http://localhost:5000/api/issues/${editingIssue._id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editingIssue),
-      });
+      await fetch(
+        `https://greenmap-backend-jwnf.onrender.com/api/issues/${editingIssue._id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(editingIssue),
+        },
+      );
       setEditingIssue(null);
       fetchIssues();
     } catch (error) {
