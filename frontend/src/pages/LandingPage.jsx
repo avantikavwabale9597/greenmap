@@ -3,7 +3,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Sphere } from "@react-three/drei";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Sphere, useTexture } from "@react-three/drei";
+
 import {
   MapPin,
   Megaphone,
@@ -16,11 +16,6 @@ import {
 const SplitEarth = () => {
   const groupRef = useRef();
 
-  // Load a high-quality realistic Earth texture
-  const earthTexture = useTexture(
-    "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
-  );
-
   useFrame(({ clock }) => {
     if (groupRef.current) {
       groupRef.current.rotation.y = clock.getElapsedTime() * 0.3;
@@ -29,27 +24,17 @@ const SplitEarth = () => {
 
   return (
     <group ref={groupRef}>
-      {/* Left Half: Clean Realistic Earth */}
+      {/* Left Half: Clean & Lush Green/Blue Earth */}
       <Sphere args={[1.75, 64, 64, 0, Math.PI]}>
-        <meshStandardMaterial
-          map={earthTexture}
-          color="#ffffff" // White keeps the natural Earth colors intact
-          roughness={0.4}
-          metalness={0.1}
-        />
+        <meshStandardMaterial color="#2d6a4f" roughness={0.4} metalness={0.1} />
       </Sphere>
 
-      {/* Right Half: Polluted, Muddy Earth */}
+      {/* Right Half: Polluted & Smokey Brown Earth */}
       <Sphere args={[1.75, 64, 64, Math.PI, Math.PI]}>
-        <meshStandardMaterial
-          map={earthTexture}
-          color="#8b7355" // Tints the Earth texture with a dirty smog color
-          roughness={0.9}
-          metalness={0.0}
-        />
+        <meshStandardMaterial color="#4a3f35" roughness={0.9} metalness={0.0} />
       </Sphere>
 
-      {/* Tech Wireframe Atmosphere (Kept exactly as you had it!) */}
+      {/* Tech Wireframe Atmosphere */}
       <Sphere args={[1.95, 32, 32]}>
         <meshBasicMaterial
           color="#ECF39E"
@@ -268,7 +253,9 @@ export default function LandingPage() {
             >
               <ambientLight intensity={1.8} />
               <directionalLight position={[10, 10, 5]} intensity={2.5} />
+
               <SplitEarth />
+
               <OrbitControls
                 enableZoom={false}
                 autoRotate
