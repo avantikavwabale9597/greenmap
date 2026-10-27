@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Tooltip } from "react-leaflet";
 import { motion } from "framer-motion";
-import { Edit2, X, Save } from "lucide-react";
+import { Edit2, X, Save, PhoneCall, ExternalLink } from "lucide-react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -19,7 +19,6 @@ export default function MapView() {
   const punePosition = [18.5204, 73.8567];
   const [issues, setIssues] = useState([]);
   const [editingIssue, setEditingIssue] = useState(null);
-
   const fallbackImage =
     "https://placehold.co/400x300/e2e8f0/31572C?text=No+Image+Provided";
 
@@ -208,6 +207,7 @@ export default function MapView() {
                           marginBottom: "12px",
                         }}
                       />
+
                       <h3
                         style={{
                           margin: "0 0 8px 0",
@@ -218,6 +218,7 @@ export default function MapView() {
                       >
                         {issue.title}
                       </h3>
+
                       <div
                         style={{
                           display: "flex",
@@ -261,6 +262,7 @@ export default function MapView() {
                           {currentStatus}
                         </span>
                       </div>
+
                       <p
                         style={{
                           fontSize: "13px",
@@ -271,6 +273,65 @@ export default function MapView() {
                       >
                         {issue.description}
                       </p>
+
+                      {/* ADMIN PROVIDED RESOURCES SECTION */}
+                      {(issue.helpline || issue.website) && (
+                        <div
+                          style={{
+                            backgroundColor: "#f0fdf4",
+                            border: "2px solid #bbf7d0",
+                            borderRadius: "8px",
+                            padding: "10px",
+                            marginBottom: "15px",
+                          }}
+                        >
+                          <h4
+                            style={{
+                              margin: "0 0 8px 0",
+                              fontSize: "11px",
+                              color: "#166534",
+                              textTransform: "uppercase",
+                              letterSpacing: "0.5px",
+                            }}
+                          >
+                            Official Resources
+                          </h4>
+                          {issue.helpline && (
+                            <p
+                              style={{
+                                margin: "0 0 6px 0",
+                                fontSize: "12px",
+                                color: "#15803d",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "6px",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              <PhoneCall size={14} /> {issue.helpline}
+                            </p>
+                          )}
+                          {issue.website && (
+                            <a
+                              href={issue.website}
+                              target="_blank"
+                              rel="noreferrer"
+                              style={{
+                                fontSize: "12px",
+                                color: "#15803d",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "6px",
+                                fontWeight: "bold",
+                                textDecoration: "none",
+                              }}
+                            >
+                              <ExternalLink size={14} /> Visit Website
+                            </a>
+                          )}
+                        </div>
+                      )}
+
                       <button
                         onClick={() => setEditingIssue(issue)}
                         style={{

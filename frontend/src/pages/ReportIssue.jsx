@@ -30,7 +30,6 @@ export default function ReportIssue() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
-
   const [position, setPosition] = useState([18.5204, 73.8567]);
 
   const [formData, setFormData] = useState({
@@ -38,20 +37,18 @@ export default function ReportIssue() {
     category: "Waste Management",
     description: "",
     image: "",
+    userEmail: "",
   });
 
   const handleGetGPS = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          const newPos = [pos.coords.latitude, pos.coords.longitude];
-          setPosition(newPos);
+          setPosition([pos.coords.latitude, pos.coords.longitude]);
           alert("GPS location acquired successfully!");
         },
         () => {
-          alert(
-            "Unable to retrieve GPS. Please click directly on the map to pin-point the location.",
-          );
+          alert("Unable to retrieve GPS. Please click directly on the map.");
         },
       );
     } else {
@@ -84,22 +81,16 @@ export default function ReportIssue() {
     try {
       const response = await fetch("http://localhost:5000/api/issues", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
-        throw new Error(
-          "Server connection failed. Ensure your backend is running on port 5000.",
-        );
+        throw new Error("Server connection failed.");
       }
 
       setSuccess(true);
-      setTimeout(() => {
-        navigate("/map");
-      }, 1500);
+      setTimeout(() => navigate("/map"), 1500);
     } catch (err) {
       setError(err.message || "Failed to connect to the database.");
     } finally {
@@ -137,8 +128,7 @@ export default function ReportIssue() {
           <p
             style={{ fontSize: "1.125rem", color: "#40916C", fontWeight: 600 }}
           >
-            Help keep Pune clean by reporting issues and pin-pointing them on
-            the map.
+            Help keep Pune clean by reporting issues.
           </p>
         </div>
 
@@ -157,8 +147,7 @@ export default function ReportIssue() {
               fontWeight: "bold",
             }}
           >
-            <CheckCircle2 size={28} />
-            Issue successfully saved to MongoDB database! Redirecting to live
+            <CheckCircle2 size={28} /> Issue successfully saved! Redirecting to
             map...
           </div>
         )}
@@ -178,8 +167,7 @@ export default function ReportIssue() {
               fontWeight: "bold",
             }}
           >
-            <AlertCircle size={28} />
-            {error}
+            <AlertCircle size={28} /> {error}
           </div>
         )}
 
@@ -211,7 +199,6 @@ export default function ReportIssue() {
               <input
                 type="text"
                 required
-                placeholder="e.g., Overflowing Garbage Bin"
                 value={formData.title}
                 onChange={(e) =>
                   setFormData({ ...formData, title: e.target.value })
@@ -224,7 +211,6 @@ export default function ReportIssue() {
                   borderRadius: "1rem",
                   fontSize: "1.125rem",
                   outline: "none",
-                  fontFamily: "inherit",
                 }}
               />
             </div>
@@ -261,7 +247,6 @@ export default function ReportIssue() {
                     borderRadius: "1rem",
                     fontSize: "1.125rem",
                     outline: "none",
-                    fontFamily: "inherit",
                   }}
                 >
                   <option value="Waste Management">Waste Management</option>
@@ -282,31 +267,25 @@ export default function ReportIssue() {
                     marginBottom: "0.75rem",
                   }}
                 >
-                  Location Pin-point
+                  Email Address (For Updates)
                 </label>
-                <button
-                  type="button"
-                  onClick={handleGetGPS}
+                <input
+                  type="tel"
+                  placeholder="abc@gmail.com"
+                  value={formData.userEmail}
+                  onChange={(e) =>
+                    setFormData({ ...formData, userEmail: e.target.value })
+                  }
                   style={{
                     width: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "0.75rem",
                     padding: "1.25rem 1.5rem",
-                    backgroundColor: "#ECF39E",
-                    color: "#31572C",
-                    fontWeight: "bold",
+                    backgroundColor: "#FAF9F6",
+                    border: "2px solid #90A955",
                     borderRadius: "1rem",
                     fontSize: "1.125rem",
-                    border: "none",
-                    cursor: "pointer",
-                    boxShadow: "0 4px 6px rgba(0,0,0,0.05)",
+                    outline: "none",
                   }}
-                >
-                  <MapPin size={24} />
-                  <span>Use Device GPS</span>
-                </button>
+                />
               </div>
             </div>
 
@@ -320,17 +299,30 @@ export default function ReportIssue() {
                   marginBottom: "0.75rem",
                 }}
               >
-                Click on the map to pin exact location:{" "}
-                <span
-                  style={{
-                    fontSize: "0.9rem",
-                    color: "#666",
-                    fontWeight: "normal",
-                  }}
-                >
-                  ({position[0].toFixed(4)}, {position[1].toFixed(4)})
-                </span>
+                Location Pin-point
               </label>
+              <button
+                type="button"
+                onClick={handleGetGPS}
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.75rem",
+                  padding: "1.25rem 1.5rem",
+                  backgroundColor: "#ECF39E",
+                  color: "#31572C",
+                  fontWeight: "bold",
+                  borderRadius: "1rem",
+                  fontSize: "1.125rem",
+                  border: "none",
+                  cursor: "pointer",
+                  marginBottom: "1rem",
+                }}
+              >
+                <MapPin size={24} /> Use Device GPS
+              </button>
               <div
                 style={{
                   height: "350px",
@@ -369,7 +361,6 @@ export default function ReportIssue() {
               <textarea
                 rows="3"
                 required
-                placeholder="Provide detailed information about the issue..."
                 value={formData.description}
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })
@@ -383,7 +374,6 @@ export default function ReportIssue() {
                   fontSize: "1.125rem",
                   outline: "none",
                   resize: "none",
-                  fontFamily: "inherit",
                 }}
               ></textarea>
             </div>
@@ -412,27 +402,21 @@ export default function ReportIssue() {
                   borderRadius: "1rem",
                   fontSize: "1.125rem",
                   outline: "none",
-                  fontFamily: "inherit",
                   cursor: "pointer",
                 }}
               />
               {formData.image && (
-                <div
+                <img
+                  src={formData.image}
+                  alt="Preview"
                   style={{
                     marginTop: "1.5rem",
-                    borderRadius: "1rem",
-                    overflow: "hidden",
                     width: "100%",
                     maxWidth: "300px",
+                    borderRadius: "1rem",
                     border: "3px solid #ECF39E",
                   }}
-                >
-                  <img
-                    src={formData.image}
-                    alt="Preview"
-                    style={{ width: "100%", height: "auto", display: "block" }}
-                  />
-                </div>
+                />
               )}
             </div>
 
@@ -453,11 +437,9 @@ export default function ReportIssue() {
                 fontWeight: "bold",
                 border: "none",
                 cursor: "pointer",
-                boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1)",
               }}
             >
-              <Send size={26} />
-              <span>{loading ? "Saving to Database..." : "Submit Report"}</span>
+              <Send size={26} /> {loading ? "Saving..." : "Submit Report"}
             </button>
           </form>
         </div>

@@ -13,6 +13,9 @@ const IssueSchema = new mongoose.Schema(
     },
     status: { type: String, default: "Pending" },
     image: { type: String, default: "" },
+    helpline: { type: String, default: "" },
+    website: { type: String, default: "" },
+    userEmail: { type: String, default: "" },
   },
   { timestamps: true },
 );
