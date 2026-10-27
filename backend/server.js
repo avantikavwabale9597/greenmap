@@ -60,6 +60,7 @@ app.post("/api/issues", async (req, res) => {
     // IMPORTANT: Make sure your frontend sends userEmail instead of userPhone now!
     const { title, category, description, lat, lng, image, userEmail } =
       req.body;
+
     const newIssue = new Issue({
       title,
       category,
@@ -70,10 +71,32 @@ app.post("/api/issues", async (req, res) => {
       userEmail,
       location: { lat, lng },
     });
+
+    // 1. Save to the database (This is very fast)
     const savedIssue = await newIssue.save();
+
+    // 2. SEND RESPONSE IMMEDIATELY
+    // This tells the frontend "Success!" right away so it doesn't time out
     res.status(201).json(savedIssue);
+
+    // 3. SEND EMAIL IN THE BACKGROUND
+    // Notice there is NO "await" here. The server handles this quietly after replying.
+    // (Ensure your 'transporter' variable is configured properly above this route)
+    if (transporter) {
+      transporter
+        .sendMail({
+          from: process.env.EMAIL_USER,
+          to: process.env.EMAIL_USER, // Sends an alert to yourself, or replace with admin email
+          subject: `New GreenMap Issue: ${title}`,
+          text: `Category: ${category}\nDescription: ${description}\nReported by: ${userEmail}\nCoordinates: ${lat}, ${lng}`,
+        })
+        .catch((err) => console.error("Background email failed:", err));
+    }
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    // Only send the error response if we haven't already replied to the frontend
+    if (!res.headersSent) {
+      res.status(400).json({ error: err.message });
+    }
   }
 });
 
