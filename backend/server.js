@@ -16,13 +16,21 @@ mongoose
   .then(() => console.log("MongoDB connected successfully!"))
   .catch((err) => console.log("MongoDB connection error: ", err));
 
-// Set up the Email Transporter
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
+  pool: true,
+  maxConnections: 1,
+  rateDelta: 20000,
+  rateLimit: 5,
+  connectionTimeout: 15000,
+  greetingTimeout: 10000,
+  socketTimeout: 15000,
 });
 
 app.get("/", (req, res) => {
