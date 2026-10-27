@@ -59,16 +59,31 @@ export default function AdminDashboard() {
 
   const handleUpdateIssue = async (e) => {
     e.preventDefault();
+
+    if (!managingIssue || !managingIssue._id) {
+      alert("Error: Issue ID is missing!");
+      return;
+    }
+
     try {
-      await fetch(`https://greenmap-backend-jwnf.onrender.com`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(managingIssue),
-      });
+      const response = await fetch(
+        `https://greenmap-backend-jwnf.onrender.com/api/issues/${managingIssue._id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(managingIssue),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update issue");
+      }
+
       setManagingIssue(null);
       fetchIssues();
+      alert("Status updated successfully! Email notification dispatched.");
     } catch (error) {
-      console.error(error);
+      console.error("Error updating issue:", error);
     }
   };
 
