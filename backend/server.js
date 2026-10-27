@@ -87,11 +87,17 @@ app.put("/api/issues/:id", async (req, res) => {
       { returnDocument: "after" },
     );
 
-    if (updatedIssue.userEmail && process.env.EMAIL_USER) {
-      // Create a link to your React frontend (Assuming Vite runs on port 5173)
-      const frontendLink = `https://greenmappune.netlify.app/status/${updatedIssue._id}`;
+    if (!updatedIssue) {
+      return res.status(404).json({ error: "Issue not found" });
+    }
 
-      // Build a beautiful HTML email body
+    // 1. Send the response back to the frontend IMMEDIATELY so it feels instant
+    res.json(updatedIssue);
+
+    // 2. Handle email sending in the background asynchronously (non-blocking)
+    if (updatedIssue.userEmail && process.env.EMAIL_USER) {
+      const frontendLink = `https://greenmappune.netlify.app/#/status/${updatedIssue._id}`;
+
       const htmlBody = `
         <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px;">
           <h2 style="color: #16a34a; text-align: center;">🌿 GreenMap Update</h2>
@@ -99,16 +105,9 @@ app.put("/api/issues/:id", async (req, res) => {
           <p>Your reported issue <strong>"${updatedIssue.title}"</strong> has been updated.</p>
           <p><strong>New Status:</strong> <span style="background-color: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 9999px; font-weight: bold;">${updatedIssue.status}</span></p>
           
-          <div style="background-color: #f9fafb; padding: 15px; border-radius: 6px; margin: 15px 0;">
-            ${updatedIssue.helpline ? `<p style="margin: 5px 0;">📞 <strong>Helpline:</strong> ${updatedIssue.helpline}</p>` : ""}
-            ${updatedIssue.website ? `<p style="margin: 5px 0;">🌐 <strong>Website:</strong> <a href="${updatedIssue.website}" style="color: #2563eb;">${updatedIssue.website}</a></p>` : ""}
-          </div>
-          
           <div style="text-align: center; margin-top: 25px;">
-            <p style="margin-bottom: 15px;">Click below to view your full report details:</p>
             <a href="${frontendLink}" style="background-color: #16a34a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">View Issue Details</a>
           </div>
-          
           <hr style="border: none; border-top: 1px solid #eaeaea; margin-top: 30px;" />
           <p style="font-size: 12px; color: #888; text-align: center;">Thank you for helping keep Pune clean!<br>— The GreenMap Team</p>
         </div>
@@ -121,15 +120,14 @@ app.put("/api/issues/:id", async (req, res) => {
         html: htmlBody,
       };
 
-      try {
-        await transporter.sendMail(mailOptions);
-        console.log(" Email successfully sent with link!");
-      } catch (emailError) {
-        console.error("Nodemailer Error:", emailError.message);
-      }
+      // Fire and forget (or catch errors quietly in the background)
+      transporter
+        .sendMail(mailOptions)
+        .then(() => console.log("Background email sent successfully!"))
+        .catch((emailError) =>
+          console.error("Nodemailer Background Error:", emailError.message),
+        );
     }
-
-    res.json(updatedIssue);
   } catch (err) {
     console.error("Error updating issue:", err.message);
     res.status(400).json({ error: err.message });
